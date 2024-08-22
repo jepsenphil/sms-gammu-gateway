@@ -1,4 +1,5 @@
 import os
+import sys
 
 from flask import Flask, request
 from flask_httpauth import HTTPBasicAuth
@@ -13,9 +14,9 @@ port = os.getenv('PORT', '5000')
 user_data = load_user_data()
 machine = init_state_machine(pin)
 app = Flask(__name__)
+#app.debug = True
 api = Api(app)
 auth = HTTPBasicAuth()
-
 
 @auth.verify_password
 def verify(username, password):
@@ -33,13 +34,13 @@ class Sms(Resource):
         self.parser.add_argument('unicode')
         self.machine = sm
 
-    @auth.login_required
+    #@auth.login_required
     def get(self):
         allSms = retrieveAllSms(machine)
         list(map(lambda sms: sms.pop("Locations"), allSms))
         return allSms
-
-    @auth.login_required
+ 
+    #@auth.login_required
     def post(self):
         args = self.parser.parse_args()
         if args['text'] is None or args['number'] is None:
@@ -60,6 +61,7 @@ class Sms(Resource):
                 message["SMSC"] = {'Number': args.get("smsc")} if args.get("smsc") else {'Location': 1}
                 message["Number"] = number
                 messages.append(message)
+                print(message, file=sys.stderr) 
         result = [machine.SendSMS(message) for message in messages]
         return {"status": 200, "message": str(result)}, 200
 

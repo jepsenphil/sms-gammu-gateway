@@ -2,6 +2,8 @@ import sys
 
 import gammu
 
+gammu.SetDebugFile(sys.stderr)
+gammu.SetDebugLevel('textalldate')
 
 def load_user_data(filename='credentials.txt'):
     users = {}
