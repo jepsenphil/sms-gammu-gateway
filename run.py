@@ -57,6 +57,7 @@ class Sms(Resource):
         }
         messages = []
         for number in args.get("number").split(','):
+            number = number.strip()
             for message in encodeSms(smsinfo):
                 message["SMSC"] = {'Number': args.get("smsc")} if args.get("smsc") else {'Location': 1}
                 message["Number"] = number
